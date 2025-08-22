@@ -107,7 +107,7 @@ BEGIN
 END //
 DELIMITER ;
 
--- RF[06] Upload de Mídia (áudio, imagens, vídeos)
+-- RF[04] Upload de Mídia (áudio, imagens, vídeos)
 
 -- 1. Inserir mídia
 DELIMITER //
@@ -143,7 +143,7 @@ BEGIN
 END //
 DELIMITER ;
 
--- RF[07] Painel do administrador 
+-- RF[05] Painel do administrador 
 
 -- 1. Listar todos os usuários
 DELIMITER //
@@ -266,5 +266,34 @@ DELIMITER //
 CREATE PROCEDURE RemoverMidiaPorId(IN p_id INT)
 BEGIN
     DELETE FROM midias WHERE id = p_id;
+END //
+DELIMITER ;
+
+-- RF[06] Pesquisa e filtro por temas
+
+-- 1. Pesquisar locais por nome
+DELIMITER //
+CREATE PROCEDURE PesquisarLocaisPorNome(
+    IN p_nome VARCHAR(100)
+)
+BEGIN
+    SELECT * FROM local
+    WHERE nome LIKE CONCAT('%', p_nome, '%');
+END //
+DELIMITER ;
+
+-- 2. Filtrar por tipo de denúncia
+DELIMITER //
+CREATE PROCEDURE FiltrarDenunciasPorTipo(
+    IN p_tipo VARCHAR(50)
+)
+BEGIN
+    SELECT denuncias.*, usuarios.username, local.nome AS local_nome
+    FROM denuncias
+    JOIN usuarios ON denuncias.usuario_id = usuarios.id
+    JOIN local ON denuncias.local_id = local.id
+    JOIN midias ON denuncias.id = midias.denuncia_id
+    WHERE midias.tipo = p_tipo
+    ORDER BY denuncias.data_denuncia DESC;
 END //
 DELIMITER ;
