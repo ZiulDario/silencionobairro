@@ -86,7 +86,8 @@ DELIMITER //
 CREATE PROCEDURE CriarDenuncia(
     IN p_usuario_id INT,
     IN p_local_id INT,
-    IN p_descricao TEXT
+    IN p_descricao TEXT,
+    IN p_data_denuncia DATETIME DEFAULT CURRENT_TIMESTAMP,
 )
 BEGIN
     INSERT INTO denuncias (usuario_id, local_id, descricao, data_denuncia)
@@ -106,6 +107,41 @@ BEGIN
 END //
 DELIMITER ;
 
+-- RF[06] Upload de Mídia (áudio, imagens, vídeos)
+
+-- 1. Inserir mídia
+DELIMITER //
+CREATE PROCEDURE InserirMidia(
+    IN p_denuncia_id INT,
+    IN p_tipo VARCHAR(50),
+    IN p_caminho_arquivo VARCHAR(255)
+)
+BEGIN
+    INSERT INTO midia (denuncia_id, tipo, caminho_arquivo)
+    VALUES (p_denuncia_id, p_tipo, p_caminho_arquivo);
+END //
+DELIMITER ;
+
+-- 2. Listar mídias por denúncia
+DELIMITER //
+CREATE PROCEDURE ListarMidiasPorDenuncia(
+    IN p_denuncia_id INT
+)
+BEGIN
+    SELECT * FROM midia
+    WHERE denuncia_id = p_denuncia_id;
+END //
+DELIMITER ;
+
+-- 3. Remover mídia
+DELIMITER //
+CREATE PROCEDURE RemoverMidia(
+    IN p_id INT
+)
+BEGIN
+    DELETE FROM midia WHERE id = p_id;
+END //
+DELIMITER ;
 
 -- RF[07] Painel do administrador 
 
@@ -207,5 +243,28 @@ DELIMITER //
 CREATE PROCEDURE RemoverDenuncia(IN p_id INT)
 BEGIN
     DELETE FROM denuncias WHERE id = p_id;
+END //
+DELIMITER ;
+
+-- 10 Atualizar denúncia
+DELIMITER //
+CREATE PROCEDURE AtualizarDenuncia(
+    IN p_id INT,
+    IN p_usuario_id INT,
+    IN p_local_id INT,
+    IN p_descricao TEXT
+)
+BEGIN
+    UPDATE denuncias
+    SET usuario_id = p_usuario_id, local_id = p_local_id, descricao = p_descricao
+    WHERE id = p_id;
+END //
+DELIMITER ;
+
+-- 11 Remover mídia por ID
+DELIMITER //
+CREATE PROCEDURE RemoverMidiaPorId(IN p_id INT)
+BEGIN
+    DELETE FROM midias WHERE id = p_id;
 END //
 DELIMITER ;

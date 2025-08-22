@@ -38,6 +38,15 @@ CREATE TABLE IF NOT EXISTS 'denuncias' (
     FOREIGN KEY (local_id) REFERENCES local(id)
 );
 
+CREATE TABLE IF NOT EXISTS 'midias' (
+    id int primary key auto_increment,
+    denuncia_id int not null,
+    tipo varchar(50) not null, -- 'imagem', 'audio', 'video'
+    caminho_arquivo varchar(255) not null,
+    data_upload datetime default current_timestamp,
+    FOREIGN KEY (denuncia_id) REFERENCES denuncias(id)
+);
+
 CREATE TABLE IF NOT EXISTS 'admin' (
     id int primary key auto_increment,
     username varchar(50) not null unique,
