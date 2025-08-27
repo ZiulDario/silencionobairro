@@ -225,7 +225,19 @@ BEGIN
 END //
 DELIMITER ;
 
--- 8. Listar denúncias recentes
+-- 8. Visualizar relatos por bairro e local
+DELIMITER //
+CREATE PROCEDURE VisualizarRelatosPorBairroELocal()
+BEGIN
+    SELECT bairros.nome AS bairro_nome, local.nome AS local_nome, COUNT(denuncias.id) AS total_denuncias
+    FROM bairros
+    JOIN local ON bairros.id = local.bairro_id
+    LEFT JOIN denuncias ON local.id = denuncias.local_id
+    GROUP BY bairros.id, local.id;
+END //
+DELIMITER ;
+
+-- 9. Listar denúncias recentes
 DELIMITER //
 CREATE PROCEDURE ListarDenunciasRecentes()
 BEGIN
@@ -238,7 +250,7 @@ BEGIN
 END //
 DELIMITER ;
 
--- 9 Remover denúncia
+-- 10. Remover denúncia
 DELIMITER //
 CREATE PROCEDURE RemoverDenuncia(IN p_id INT)
 BEGIN
@@ -246,7 +258,7 @@ BEGIN
 END //
 DELIMITER ;
 
--- 10 Atualizar denúncia
+-- 11. Atualizar denúncia
 DELIMITER //
 CREATE PROCEDURE AtualizarDenuncia(
     IN p_id INT,
@@ -261,7 +273,7 @@ BEGIN
 END //
 DELIMITER ;
 
--- 11 Remover mídia por ID
+-- 12. Remover mídia por ID
 DELIMITER //
 CREATE PROCEDURE RemoverMidiaPorId(IN p_id INT)
 BEGIN
@@ -297,3 +309,20 @@ BEGIN
     ORDER BY denuncias.data_denuncia DESC;
 END //
 DELIMITER ;
+
+-- 3. Filtrar denúncias por data
+DELIMITER //
+CREATE PROCEDURE FiltrarDenunciasPorData(
+    IN p_data_inicio DATETIME,
+    IN p_data_fim DATETIME
+)
+BEGIN
+    SELECT denuncias.*, usuarios.username, local.nome AS local_nome
+    FROM denuncias
+    JOIN usuarios ON denuncias.usuario_id = usuarios.id
+    JOIN local ON denuncias.local_id = local.id
+    WHERE denuncias.data_denuncia BETWEEN p_data_inicio AND p_data_fim
+    ORDER BY denuncias.data_denuncia DESC;
+END //
+DELIMITER ;
+
